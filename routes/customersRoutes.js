@@ -4,6 +4,6 @@ const customersRouter = express.Router();
 const getcustomersController = require("../controllers/customersControllers.js");
 
 
-customersRouter.post("/api/customers", getcustomersController.getcustomers);
+customersRouter.get("/api/customers", getcustomersController.getcustomers);
 
 module.exports = customersRouter;
