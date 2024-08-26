@@ -4,7 +4,7 @@ const pool=require("../db/db")
 const getcustomers=(req,res) => {
     console.log(`/api/customers/ endpoint was hit🎯`)
     console.log(req.body)
-    // Just do for checking customer status for future
+    // ====== Just do for checking customer status for future
     const query = `SELECT CustomerID FROM customers WHERE CustomerID = ?`;
     pool.execute(query,[req.body.customerID],(err,result)=>{
       if (err) {
