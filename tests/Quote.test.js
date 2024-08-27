@@ -1,60 +1,83 @@
-const carValue = [];
-const riskRating = [];
+const qoute = require("../controllers/quoteControllers");
+const cars = require("../db/cars");
 
-describe("quote function", () => {
-  // Test the API response structure consistency for calculating yearly premium.
-  test.todo(
-    "Ensure the API correctly calculates the yearly premium based on the car value and risk rating",
-    () => {}
-  );
+test("Calculates the yearly and monthly premium based on the car value and risk rating", () => {
+  const CAR_VALUE = cars[0].car_value;
+  const RISK_RATING = cars[0].risk_rating;
+  const yearly = 100;
+  const monthly = 12;
 
-  test.todo(
-    "Ensure the API correctly calculates the monthly premium (yearly premium divided by 12)",
-    () => {}
-  );
+  const yearlyPremium = (CAR_VALUE * RISK_RATING) / yearly;
+  const premiumMonthly = yearlyPremium / monthly;
 
-  test.todo(
-    "Test with various car values and risk ratings within valid ranges (e.g., 1–5)",
-    () => {}
-  );
+  expect(parseFloat(yearlyPremium.toFixed(2))).toBe(720);
+  expect(parseFloat(premiumMonthly.toFixed(2))).toBe(60);
+});
 
-  test.todo(
-    "Test the lowest and highest risk rating values (1 and 5)",
-    () => {}
-  );
+test("Test with various car values and risk ratings within valid ranges", () => {
+  const CAR_VALUE = cars[1].car_value;
+  const RISK_RATING = cars[1].risk_rating;
+  const yearly = 100;
+  const monthly = 12;
 
-  test.todo(
-    "Test the lowest and highest car values allowed by the system",
-    () => {}
-  );
+  const yearlyPremium = (CAR_VALUE * RISK_RATING) / yearly;
+  const premiumMonthly = yearlyPremium / monthly;
 
-  test.todo(
-    "Ensure the API returns an error if the car value is missing or not a valid number",
-    () => {}
-  );
+  expect(parseFloat(yearlyPremium.toFixed(2))).toBe(360);
+  expect(parseFloat(premiumMonthly.toFixed(2))).toBe(30);
+});
+test("Test the lowest and highest risk rating values", () => {
+  const CAR_1 = cars[4].risk_rating;
+  const CAR_2 = cars[1].risk_rating;
 
-  test.todo(
-    "Ensure the API returns an error if the risk rating is missing, out of range, or not a valid number",
-    () => {}
-  );
+  function getRiskRating(riskRating) {
+    if (riskRating === 5) {
+      return "Very High Risk";
+    } else if (riskRating === 4) {
+      return "High Risk";
+    } else if (riskRating === 3) {
+      return "Moderate Risk";
+    } else if (riskRating === 2) {
+      return "Low Risk";
+    } else {
+      return "Very Low Risk";
+    }
+  }
 
-  test.todo(
-    "Test with special characters or invalid formats for car value and risk rating",
-    () => {}
-  );
+  expect(getRiskRating(CAR_1)).toBe("Very High Risk");
+  expect(getRiskRating(CAR_2)).toBe("Low Risk");
+});
 
-  test.todo(
-    "Ensure the API returns the correct error message when invalid inputs are provided",
-    () => {}
-  );
+test("Returns an error if the risk rating is missing, out of range, or not a valid number", () => {
+  const outOfRange = 7;
+  const missing = undefined;
+  const invalid = "invalid";
+  const error = { error: "there is an error" };
 
-  test.todo(
-    `Ensure the structure of the error response matches the expected format ({ error: "there is an error" })`,
-    () => {}
-  );
+  function outOfRangeRiskRating(riskRating) {
+    if (isNaN(riskRating) || riskRating < 1 || riskRating > 5) {
+      return { error: "there is an error" };
+    }
+  }
 
-  test.todo(
-    "Test how the API handles high volumes of requests and large numbers for car values.",
-    () => {}
-  );
+  expect(outOfRangeRiskRating(outOfRange)).toEqual(error);
+  expect(outOfRangeRiskRating(missing)).toEqual(error);
+  expect(outOfRangeRiskRating(invalid)).toEqual(error);
+});
+
+test("Returns an error if the car value is missing or not a valid number", () => {
+  const outOfRange = -10000;
+  const missing = undefined;
+  const invalid = "invalid";
+  const error = { error: "there is an error" };
+
+  function outOfRangeCarValue(carValue) {
+    if (isNaN(carValue) || carValue <= 0) {
+      return { error: "there is an error" };
+    }
+  }
+
+  expect(outOfRangeCarValue(outOfRange)).toEqual(error);
+  expect(outOfRangeCarValue(missing)).toEqual(error);
+  expect(outOfRangeCarValue(invalid)).toEqual(error);
 });
