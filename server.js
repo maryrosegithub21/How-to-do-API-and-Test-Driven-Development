@@ -17,10 +17,11 @@ const customersRouter = require("./routes/customersRoutes");
 // Create API ENDPOINTS HERE!!!
 
 // ROOT ENDPOINT
-app.get("/", (req, res) => {
-app.get("/api/customers", (req, res) => {
+app.get( "/", (req, res) => {
     res.send("The backend is functioning!");
 });
+
+app.use(customersRouter);
 
 // Risk Rating Endpoint
 app.post('/api/calculate-risk', (req, res) => {
@@ -38,7 +39,7 @@ app.post('/api/calculate-risk', (req, res) => {
     }
 });
 
-app.use(customersRouter);
+
 
 // ========== ROUTE IMPORTS ========== //
 const vehiclesRouter = require("./routes/vehiclesRoutes");

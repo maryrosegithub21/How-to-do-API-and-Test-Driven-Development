@@ -28,8 +28,8 @@ const getvehicles = (req, res) => {
         return {
             Test_Case_Number : vehicle.Test_Case_Number,
             // Make: vehicle.Model,
-            Model : transformedModelSum,
-            Year: vehicle.Year,
+            Model :  `${vehicle.Model} ${vehicle.Year}`, // Combine Model and Year
+            // Year: vehicle.Year,
             Expected_Output : updatedYear,
             Test_Description : vehicle.Test_Description
         };
