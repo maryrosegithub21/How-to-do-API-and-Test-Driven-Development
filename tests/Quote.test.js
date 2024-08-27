@@ -2,11 +2,11 @@ const carValue = [];
 const riskRating = [];
 
 describe("quote function", () => {
-      // Test the API response structure consistency for calculating yearly premium.
-      test.todo(
-        "Ensure the API correctly calculates the yearly premium based on the car value and risk rating",
-        () => {}
-      );
+  // Test the API response structure consistency for calculating yearly premium.
+  test.todo(
+    "Ensure the API correctly calculates the yearly premium based on the car value and risk rating",
+    () => {}
+  );
 
   test.todo(
     "Ensure the API correctly calculates the monthly premium (yearly premium divided by 12)",
