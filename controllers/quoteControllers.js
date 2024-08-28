@@ -1,80 +1,54 @@
 const pool = require("../db/db");
+const cars = require("../db/cars");
 
-const getRiskRating = (riskRating) => {
-  if (typeof riskRating !== "number" || riskRating < 1 || riskRating > 5) {
-    return { error: "there is an error" };
-  } else if (riskRating === 5) {
-    return "very high risk";
+const CAR_YEAR = cars[0].year;
+const CAR_MAKE = cars[0].make;
+const CAR_MODEL = cars[0].model;
+const CAR_VALUE = cars[0].car_value;
+const RISK_RATING = cars[0].risk_rating;
+const YEARLY = 100;
+const MONTHLY = 12;
+
+const riskRatingResult = (riskRating) => {
+  if (riskRating === 5) {
+    return "Very High Risk";
   } else if (riskRating === 4) {
-    return "high risk";
+    return "High Risk";
   } else if (riskRating === 3) {
-    return "moderate risk";
+    return "Moderate Risk";
   } else if (riskRating === 2) {
-    return "low risk";
+    return "Low Risk";
   } else {
-    return "very low risk";
+    return "Very Low Risk";
   }
 };
 
-const quote = (req, res) => {
-  console.log("/quote endpoint is hit!");
-  console.log(req.query);
-
-  const CAR_YEAR = req.query.car_year;
-  const CAR_MAKE = req.query.car_make;
-  const CAR_MODEL = req.query.car_model;
-  const CAR_VALUE = req.query.car_value;
-  const RISK_RATING = req.query.risk_rating;
-  const yearly = 100;
-  const monthly = 12;
-
-  if (isNaN(CAR_VALUE) || CAR_VALUE <= 0) {
-    return res.status(400).json({ error: "Invalid car value" });
-  }
-
-  const riskRatingResult = getRiskRating(RISK_RATING);
-  if (riskRatingResult.error) {
-    return res.status(400).json(riskRatingResult);
-  }
-
-  const yearlyPremium = parseFloat(
-    ((CAR_VALUE * RISK_RATING) / yearly).toFixed(2)
-  );
-  const monthlyPremium = parseFloat((yearlyPremium / monthly).toFixed(2));
-
-  if (
-    typeof CAR_VALUE === "number" &&
-    !isNaN(CAR_VALUE) &&
-    typeof RISK_RATING === "number" &&
-    !isNaN(RISK_RATING)
-  ) {
+module.exports = {
+  getRiskRating: riskRatingResult,
+  outOfRangeRiskRating: (riskRating) => {
+    if (isNaN(riskRating) || riskRating < 1 || riskRating > 5) {
+      return { error: "there is an error" };
+    }
+  },
+  outOfRangeCarValue: (carValue) => {
+    if (isNaN(carValue) || carValue <= 0) {
+      return { error: "there is an error" };
+    }
+  },
+  yearlyQuote: () => {
+    return (CAR_VALUE * RISK_RATING) / YEARLY;
+  },
+  monthlyQuote: () => {
+    const yearlyPremium = (CAR_VALUE * RISK_RATING) / YEARLY;
+    return yearlyPremium / MONTHLY;
+  },
+  showFinal: () => {
+    const yearlyPremium = module.exports.yearlyQuote();
+    const monthlyPremium = module.exports.monthlyQuote();
     console.log(
-      `${CAR_YEAR} ${CAR_MAKE} ${CAR_MODEL} is in ${riskRatingResult} vehicle. Yearly premium: $${yearlyPremium} and Monthly premium: $${monthlyPremium}`
+      `${CAR_YEAR} ${CAR_MAKE} ${CAR_MODEL} is a ${riskRatingResult(RISK_RATING)} vehicle. Yearly premium: $${yearlyPremium} and Monthly premium: $${monthlyPremium}`
     );
-  } else {
-    console.log("Invalid input");
-  }
-
-  let query = `SELECT * FROM turnercars WHERE car_value = ? AND risk_rating = ?`;
-
-  pool.execute(query, [CAR_VALUE, RISK_RATING], (err, result) => {
-    if (err) {
-      console.log("Database error:", err);
-      return res.status(500).json({
-        errorMessage:
-          "An error occurred while fetching data from the database.",
-      });
-    }
-    if (result.length === 0) {
-      return res.sendStatus(401); // e.g., invalid credential
-    }
-    return res.status(200).json({
-      result,
-      yearlyPremium,
-      monthlyPremium,
-      riskRating: riskRatingResult,
-    });
-  });
+  },
 };
 
-module.exports = { quote };
+module.exports.showFinal();
