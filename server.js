@@ -12,7 +12,7 @@ app.use(cors());
 app.use(express.json());
 
 // ========== ROUTE IMPORTS ========== //
-const customersRouter = require("./routes/customersRoutes");
+
 
 // Create API ENDPOINTS HERE!!!
 
@@ -21,7 +21,7 @@ app.get( "/", (req, res) => {
     res.send("The backend is functioning!");
 });
 
-app.use(customersRouter);
+
 
 // Risk Rating Endpoint
 app.post('/api/calculate-risk', (req, res) => {
