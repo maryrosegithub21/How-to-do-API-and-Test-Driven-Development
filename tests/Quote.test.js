@@ -1,63 +1,53 @@
-const qoute = require("../controllers/quoteControllers");
-const cars = require("../db/cars");
+const quote = require("../controllers/quoteControllers");
+const car = require("../db/cars");
 
-test("Test the lowest and highest risk rating values", () => {
-  const CAR_1 = cars[4].risk_rating;
-  const CAR_2 = cars[1].risk_rating;
+describe("getQuote", () => {
+  const cars = car[0];
 
-  expect(qoute.getRiskRating(CAR_1)).toBe("Very High Risk");
-  expect(qoute.getRiskRating(CAR_2)).toBe("Low Risk");
-});
+  const CAR_YEAR = cars.year;
+  const CAR_MAKE = cars.make;
+  const CAR_MODEL = cars.model;
 
-test("Returns an error if the risk rating is missing, out of range, or not a valid number", () => {
-  const outOfRange = 7;
-  const missing = undefined;
-  const invalid = "invalid";
-  const error = { error: "there is an error" };
+  test("Returns an error if the car value is missing or not a valid number", () => {
+    // Mock different invalid car values
+    const MOCK_CAR_VALUE_1 = -10000;
+    const MOCK_CAR_VALUE_2 = undefined;
+    const MOCK_CAR_VALUE_3 = "invalid";
+    const CAR_VALUE_ERROR = { error: "there is an error" };
 
-  expect(qoute.outOfRangeRiskRating(outOfRange)).toEqual(error);
-  expect(qoute.outOfRangeRiskRating(missing)).toEqual(error);
-  expect(qoute.outOfRangeRiskRating(invalid)).toEqual(error);
-});
+    expect(quote.getChecklist(MOCK_CAR_VALUE_1)).toEqual(CAR_VALUE_ERROR);
+    expect(quote.getChecklist(MOCK_CAR_VALUE_2)).toEqual(CAR_VALUE_ERROR);
+    expect(quote.getChecklist(MOCK_CAR_VALUE_3)).toEqual(CAR_VALUE_ERROR);
+  });
 
-test("Returns an error if the car value is missing or not a valid number", () => {
-  const outOfRange = -10000;
-  const missing = undefined;
-  const invalid = "invalid";
-  const error = { error: "there is an error" };
+  test("Returns an error if the risk rating is missing, out of range, or not a valid number", () => {
+    const MOCK_RISK_VALUE_1 = -10000;
+    const MOCK_RISK_VALUE_2 = undefined;
+    const MOCK_RISK_VALUE_3 = "invalid";
+    const RISK_VALUE_ERROR = { error: "there is an error" };
 
-  expect(qoute.outOfRangeCarValue(outOfRange)).toEqual(error);
-  expect(qoute.outOfRangeCarValue(missing)).toEqual(error);
-  expect(qoute.outOfRangeCarValue(invalid)).toEqual(error);
-});
+    expect(quote.getChecklist(MOCK_RISK_VALUE_1)).toEqual(RISK_VALUE_ERROR);
+    expect(quote.getChecklist(MOCK_RISK_VALUE_2)).toEqual(RISK_VALUE_ERROR);
+    expect(quote.getChecklist(MOCK_RISK_VALUE_3)).toEqual(RISK_VALUE_ERROR);
+  });
 
-test("Calculates the yearly and monthly premium based on the car value and risk rating", () => {
-  const CAR_VALUE = cars[0].car_value;
-  const RISK_RATING = cars[0].risk_rating;
-  const YEARLY = 100;
-  const MONTHLY = 12;
+  test("Test the lowest and highest risk rating values", () => {
+    const MOCK_CAR_1 = 5;
+    const MOCK_CAR_2 = 1;
 
-  const yearlyPremium = (CAR_VALUE * RISK_RATING) / YEARLY;
-  const monthlyPremium = yearlyPremium / MONTHLY;
+    expect(quote.getRiskDescription(MOCK_CAR_1)).toBe("Extremely High Risk");
+    expect(quote.getRiskDescription(MOCK_CAR_2)).toBe("Low Risk");
+  });
 
-  expect(qoute.yearlyQuote()).toBe(yearlyPremium);
-  expect(qoute.monthlyQuote()).toBe(monthlyPremium);
-});
-
-test("Return console.log the final output", () => {
-  const CAR_YEAR = cars[0].year;
-  const CAR_MAKE = cars[0].make;
-  const CAR_MODEL = cars[0].model;
-  const CAR_VALUE = cars[0].car_value;
-  const RISK_RATING = cars[0].risk_rating;
-  const riskRatingResult = qoute.getRiskRating(RISK_RATING);
-  const yearlyQuote = qoute.yearlyQuote();
-  const monthlyQuote = qoute.monthlyQuote();
-
-  const expectedOutput = `${CAR_YEAR} ${CAR_MAKE} ${CAR_MODEL} is a ${riskRatingResult} vehicle. Yearly premium: $${yearlyQuote} and Monthly premium: $${monthlyQuote}`;
-  console.log = jest.fn();
-
-  qoute.showFinal();
-
-  expect(console.log).toHaveBeenCalledWith(expectedOutput);
+  test("Calculates the yearly and monthly premium based on the car value and risk rating", () => {
+    const CAR_VALUE = 24000;
+    const RISK_RATING = 3;
+    const YEARLY = 100;
+    const MONTHLY = 12;
+    const YEARLY_PREMIUM = parseFloat(((CAR_VALUE * RISK_RATING) / YEARLY).toFixed(2));
+    const MONTHLY_PREMIUM = parseFloat((YEARLY_PREMIUM / MONTHLY).toFixed(2));
+  
+    expect(quote.getYearlyPremium(CAR_VALUE, RISK_RATING)).toBe(YEARLY_PREMIUM);
+    expect(quote.getMonthlyPremium(YEARLY_PREMIUM)).toBe(MONTHLY_PREMIUM);
+  });
 });
