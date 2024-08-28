@@ -15,7 +15,6 @@ const customersRouter = require("./routes/customersRoutes");
 const quoteRouter = require("./routes/quoteRouters");
 
 // Create API ENDPOINTS HERE!!!
-
 // ROOT ENDPOINT
 app.get("/api/customers", (req, res) => {
     res.send("The backend is functioning!");
@@ -38,7 +37,7 @@ app.post('/api/calculate-risk', (req, res) => {
 });
 
 app.use(customersRouter);
-app.use(quoteRouter);
+app.use('/api/quotes', quoteRouter);
 
 // ========== ROUTE IMPORTS ========== //
 const vehiclesRouter = require("./routes/vehiclesRoutes");
