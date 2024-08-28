@@ -4,7 +4,7 @@ const cors = require("cors");
 const express = require("express");
 const app = express();
 require("dotenv").config();
-const { calculateRiskRating } = require('./src/RiskRating');
+const riskRatingRouter = require("../routes/riskRatingRouter.js");
 
 // Middleware
 app.use(cors());
@@ -21,23 +21,7 @@ app.get("/api/customers", (req, res) => {
 });
 
 // Risk Rating Endpoint
-app.post('/api/calculate-risk', (req, res) => {
-    try {
-        const { claim_history } = req.body;
-
-        if (typeof claim_history !== 'string') {
-            return res.status(400).json({ error: "Invalid input: claim_history must be a string." });
-        }
-
-        const result = calculateRiskRating(claim_history);
-        res.json(result);
-    } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-
-app.use(customersRouter);
-app.use('/api/quotes', quoteRouter);
+app.use(riskRatingRouter);
 
 // ========== ROUTE IMPORTS ========== //
 const vehiclesRouter = require("./routes/vehiclesRoutes");
