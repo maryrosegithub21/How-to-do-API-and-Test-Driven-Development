@@ -1,4 +1,3 @@
-const pool = require("../db/db");
 const cars = require("../db/cars");
 
 const CAR_YEAR = cars[0].year;
@@ -23,32 +22,51 @@ const riskRatingResult = (riskRating) => {
   }
 };
 
-module.exports = {
-  getRiskRating: riskRatingResult,
-  outOfRangeRiskRating: (riskRating) => {
-    if (isNaN(riskRating) || riskRating < 1 || riskRating > 5) {
-      return { error: "there is an error" };
-    }
-  },
-  outOfRangeCarValue: (carValue) => {
-    if (isNaN(carValue) || carValue <= 0) {
-      return { error: "there is an error" };
-    }
-  },
-  yearlyQuote: () => {
-    return (CAR_VALUE * RISK_RATING) / YEARLY;
-  },
-  monthlyQuote: () => {
-    const yearlyPremium = (CAR_VALUE * RISK_RATING) / YEARLY;
-    return yearlyPremium / MONTHLY;
-  },
-  showFinal: () => {
-    const yearlyPremium = module.exports.yearlyQuote();
-    const monthlyPremium = module.exports.monthlyQuote();
-    console.log(
-      `${CAR_YEAR} ${CAR_MAKE} ${CAR_MODEL} is a ${riskRatingResult(RISK_RATING)} vehicle. Yearly premium: $${yearlyPremium} and Monthly premium: $${monthlyPremium}`
-    );
-  },
+const getRiskRating = (req, res) => {
+  const riskRating = parseInt(req.params.riskRating, 10);
+  const result = riskRatingResult(riskRating);
+  res.json({ riskRating: result });
 };
 
-module.exports.showFinal();
+const outOfRangeRiskRating = (req, res) => {
+  const riskRating = parseInt(req.params.riskRating, 10);
+  if (isNaN(riskRating) || riskRating < 1 || riskRating > 5) {
+    return res.json({ error: "there is an error" });
+  }
+  res.json({ riskRating });
+};
+
+const outOfRangeCarValue = (req, res) => {
+  const carValue = parseFloat(req.params.carValue);
+  if (isNaN(carValue) || carValue <= 0) {
+    return res.json({ error: "there is an error" });
+  }
+  res.json({ carValue });
+};
+
+const yearlyQuote = (req, res) => {
+  const result = (CAR_VALUE * RISK_RATING) / YEARLY;
+  res.json({ yearlyQuote: result });
+};
+
+const monthlyQuote = (req, res) => {
+  const yearlyPremium = (CAR_VALUE * RISK_RATING) / YEARLY;
+  const result = yearlyPremium / MONTHLY;
+  res.json({ monthlyQuote: result });
+};
+
+const showFinal = (req, res) => {
+  const yearlyPremium = (CAR_VALUE * RISK_RATING) / YEARLY;
+  const monthlyPremium = yearlyPremium / MONTHLY;
+  const result = `${CAR_YEAR} ${CAR_MAKE} ${CAR_MODEL} is a ${riskRatingResult(RISK_RATING)} vehicle. Yearly premium: $${yearlyPremium} and Monthly premium: $${monthlyPremium}`;
+  res.json({ message: result });
+};
+
+module.exports = {
+  getRiskRating,
+  outOfRangeRiskRating,
+  outOfRangeCarValue,
+  yearlyQuote,
+  monthlyQuote,
+  showFinal,
+};

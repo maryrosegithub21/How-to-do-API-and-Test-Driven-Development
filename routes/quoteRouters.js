@@ -1,44 +1,23 @@
-const express = require("express");
+const express = require('express');
 const quoteRouter = express.Router();
-const getQuoteControllers = require("../controllers/quoteControllers.js");
+const quoteController = require('../controllers/quoteControllers');
 
 // Route to get risk rating
-quoteRouter.get("/risk-rating/:riskRating", (req, res) => {
-  const riskRating = parseInt(req.params.riskRating, 10);
-  const result = quoteController.getRiskRating(riskRating);
-  res.json({ riskRating: result });
-});
+quoteRouter.get('/risk-rating/:riskRating', quoteController.getRiskRating);
 
 // Route to check if risk rating is out of range
-quoteRouter.get("/out-of-range-risk-rating/:riskRating", (req, res) => {
-  const riskRating = parseInt(req.params.riskRating, 10);
-  const result = quoteController.outOfRangeRiskRating(riskRating);
-  res.json(result);
-});
+quoteRouter.get('/out-of-range-risk-rating/:riskRating', quoteController.outOfRangeRiskRating);
 
 // Route to check if car value is out of range
-quoteRouter.get("/out-of-range-car-value/:carValue", (req, res) => {
-  const carValue = parseFloat(req.params.carValue);
-  const result = quoteController.outOfRangeCarValue(carValue);
-  res.json(result);
-});
+quoteRouter.get('/out-of-range-car-value/:carValue', quoteController.outOfRangeCarValue);
 
 // Route to get yearly quote
-quoteRouter.get("/yearly-quote", (req, res) => {
-  const result = quoteController.yearlyQuote();
-  res.json({ yearlyQuote: result });
-});
+quoteRouter.get('/yearly-quote', quoteController.yearlyQuote);
 
 // Route to get monthly quote
-quoteRouter.get("/monthly-quote", (req, res) => {
-  const result = quoteController.monthlyQuote();
-  res.json({ monthlyQuote: result });
-});
+quoteRouter.get('/monthly-quote', quoteController.monthlyQuote);
 
 // Route to show final quote
-quoteRouter.get("/show-final", (req, res) => {
-  const result = quoteController.showFinal();
-  res.json({ message: result });
-});
+quoteRouter.get('/show-final', quoteController.showFinal);
 
 module.exports = quoteRouter;
