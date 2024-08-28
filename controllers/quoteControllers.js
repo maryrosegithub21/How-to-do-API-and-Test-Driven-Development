@@ -1,72 +1,80 @@
-const cars = require("../db/cars");
+const car = require("../db/cars");
 
-const CAR_YEAR = cars[0].year;
-const CAR_MAKE = cars[0].make;
-const CAR_MODEL = cars[0].model;
-const CAR_VALUE = cars[0].car_value;
-const RISK_RATING = cars[0].risk_rating;
+const cars = car[0];
+
+const CAR_YEAR = cars.year;
+const CAR_MAKE = cars.make;
+const CAR_MODEL = cars.model;
+const CAR_VALUE = cars.car_value;
+const RISK_RATING = cars.risk_rating;
 const YEARLY = 100;
 const MONTHLY = 12;
 
-const riskRatingResult = (riskRating) => {
-  if (riskRating === 5) {
-    return "Very High Risk";
-  } else if (riskRating === 4) {
-    return "High Risk";
-  } else if (riskRating === 3) {
-    return "Moderate Risk";
-  } else if (riskRating === 2) {
+const getQuoteApiHandle = (req, res) => {
+  console.log(req.query);
+  const yearlyPremium = getYearlyPremium(CAR_VALUE, RISK_RATING);
+  const monthlyPremium = getMonthlyPremium(yearlyPremium);
+  const result = { yearlyPremium, monthlyPremium };
+  res.status(200).json(result);
+};
+
+const getChecklist = (carValue, riskRate) => {
+
+  if (carValue === undefined || isNaN(carValue) || carValue <= 0) {
+    return { error: "there is an error" };
+  }
+
+  if (riskRate === undefined || isNaN(riskRate) || riskRate <= 0 || riskRate > 5) {
+    return { error: "there is an error" };
+  }
+
+  return { carValue, riskRate };
+};
+
+const getRiskDescription = (riskRate) => {
+  if (riskRate === 1) {
     return "Low Risk";
+  } else if (riskRate === 2) {
+    return "Moderate Risk";
+  } else if (riskRate === 3) {
+    return "High Risk";
+  } else if (riskRate === 4) {
+    return "Very High Risk";
   } else {
-    return "Very Low Risk";
+    return "Extremely High Risk";
   }
 };
 
-const getRiskRating = (req, res) => {
-  const riskRating = parseInt(req.params.riskRating, 10);
-  const result = riskRatingResult(riskRating);
-  res.json({ riskRating: result });
+const getYearlyPremium = (carValue, riskRate) => {
+  return parseFloat(((carValue * riskRate) / YEARLY).toFixed(2));
 };
 
-const outOfRangeRiskRating = (req, res) => {
-  const riskRating = parseInt(req.params.riskRating, 10);
-  if (isNaN(riskRating) || riskRating < 1 || riskRating > 5) {
-    return res.json({ error: "there is an error" });
-  }
-  res.json({ riskRating });
+const getMonthlyPremium = (yearlyPremium) => {
+  return parseFloat((yearlyPremium / MONTHLY).toFixed(2));
 };
 
-const outOfRangeCarValue = (req, res) => {
-  const carValue = parseFloat(req.params.carValue);
-  if (isNaN(carValue) || carValue <= 0) {
-    return res.json({ error: "there is an error" });
-  }
-  res.json({ carValue });
-};
+console.log(`${CAR_YEAR} ${CAR_MAKE} ${CAR_MODEL} is a ${getRiskDescription(RISK_RATING)} vehicle. Yearly premium: $${getYearlyPremium(CAR_VALUE, RISK_RATING)} and Monthly premium: $${getMonthlyPremium(getYearlyPremium(CAR_VALUE, RISK_RATING))}`);
 
-const yearlyQuote = (req, res) => {
-  const result = (CAR_VALUE * RISK_RATING) / YEARLY;
-  res.json({ yearlyQuote: result });
-};
 
-const monthlyQuote = (req, res) => {
-  const yearlyPremium = (CAR_VALUE * RISK_RATING) / YEARLY;
-  const result = yearlyPremium / MONTHLY;
-  res.json({ monthlyQuote: result });
-};
-
-const showFinal = (req, res) => {
-  const yearlyPremium = (CAR_VALUE * RISK_RATING) / YEARLY;
-  const monthlyPremium = yearlyPremium / MONTHLY;
-  const result = `${CAR_YEAR} ${CAR_MAKE} ${CAR_MODEL} is a ${riskRatingResult(RISK_RATING)} vehicle. Yearly premium: $${yearlyPremium} and Monthly premium: $${monthlyPremium}`;
-  res.json({ message: result });
-};
+console.table(
+  car.map((car) => {
+    const { car_value, risk_rating } = car;
+    return {
+      year: car.year,
+      make: car.make,
+      model: car.model,
+      car_value: car.car_value,
+      risk_rating: car.risk_rating,
+      yearly: getYearlyPremium(car_value, risk_rating),
+      monthly: getMonthlyPremium(getYearlyPremium(car_value, risk_rating)),
+    };
+  })
+);
 
 module.exports = {
-  getRiskRating,
-  outOfRangeRiskRating,
-  outOfRangeCarValue,
-  yearlyQuote,
-  monthlyQuote,
-  showFinal,
+  getQuoteApiHandle,
+  getChecklist,
+  getRiskDescription,
+  getYearlyPremium,
+  getMonthlyPremium,
 };
