@@ -1,4 +1,4 @@
-const DriverRisk = require("../controllers/RiskRatingControllers");
+const DriverRisk = require("../controllers/riskRatingControllers");
 
 describe('Risk Rating Calculations', () => {
     test('returns a risk rating of 4 for valid input with multiple keywords', () => {
