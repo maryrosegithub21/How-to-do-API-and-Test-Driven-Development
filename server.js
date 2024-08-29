@@ -1,67 +1,38 @@
-
 // ========== Module IMPORTS ========== //
 const cors = require("cors");
 const express = require("express");
 const app = express();
 require("dotenv").config();
 
-const { calculateRiskRating } = require('./src/RiskRating');
-
 // Middleware
 app.use(cors());
 app.use(express.json());
 
 // ========== ROUTE IMPORTS ========== //
-
-
-// // Create API ENDPOINTS HERE!!!
-
-// ROOT ENDPOINT
-app.get( "/", (req, res) => {
-    res.send("The backend is functioning!");
-});
-
-
-
-// Risk Rating Endpoint
-app.post('/api/calculate-risk', (req, res) => {
-    try {
-        const { claim_history } = req.body;
-
-        if (typeof claim_history !== 'string') {
-            return res.status(400).json({ error: "Invalid input: claim_history must be a string." });
-        }
-
-        const result = calculateRiskRating(claim_history);
-        res.json(result);
-    } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-
-
-
-// ========== ROUTE IMPORTS ========== //
 const vehiclesRouter = require("./routes/vehiclesRoutes");
+const riskRatingRouter = require("./routes/riskRatingRoutes");
+const quoteRouter = require("./routes/quoteRouters");
 
 // Create API ENDPOINTS HERE!!!
 // ROOT ENDPOINT
-// app.get("/", (req, res) => {
-//     res.send("The backend is functioning!");
-//   });
 
-//  vehicles Endpoint
-  app.use(vehiclesRouter); 
+app.get("/", (req, res) => {
+  res.send("The backend is functioning!");
+});
+
+app.use("/api/vehicle", vehiclesRouter);
+
+// Car Value Endpoint
+app.use(customersRouter);
+
+// Risk Rating Endpoint
+app.use("/api/claims", riskRatingRouter);
+
+// Insurance Quote Endpoint
+app.use("/api/quotes", quoteRouter);
 
 // Port
-const PORT = process.env.PORT || 4000 ;
-app
-  .listen(PORT, () => console.log(`It's working at http://localhost:${PORT}`))
-  .on("error", (err) => {
-    console.log(err);
-  });
-// Global Error Handler
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something went wrong!');
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+  console.log(`Server is running on "http://localhost:${PORT}"`);
 });

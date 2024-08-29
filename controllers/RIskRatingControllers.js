@@ -1,5 +1,5 @@
+// Function to calculate the risk rating based on claim history
 function calculateRiskRating(claimHistory) {
-    // Check for invalid input
     if (typeof claimHistory !== 'string' || !claimHistory.trim()) {
         return { error: "there is an error" };
     }
@@ -7,12 +7,9 @@ function calculateRiskRating(claimHistory) {
     const keywords = ['collide', 'crash', 'scratch', 'bump', 'smash'];
     let keywordCount = 0;
 
-    // Convert the claim history to lowercase for case-insensitive matching
     const lowerCaseHistory = claimHistory.toLowerCase();
 
-    // Count occurrences of each keyword and their variations
     keywords.forEach(keyword => {
-        // Use a regex to match keywords and their variations as substrings
         const regex = new RegExp(`\\b${keyword}\\w*\\b`, 'g');
         const matches = lowerCaseHistory.match(regex);
         if (matches) {
@@ -20,7 +17,6 @@ function calculateRiskRating(claimHistory) {
         }
     });
 
-    // Determine risk rating based on the number of keyword matches
     let risk_rating;
     if (keywordCount === 0) {
         risk_rating = 1;
@@ -37,4 +33,20 @@ function calculateRiskRating(claimHistory) {
     return { risk_rating };
 }
 
-module.exports = { calculateRiskRating };
+// Controller to handle API requests
+const riskRatingController = (req, res) => {
+    const { claimHistory } = req.body;  // Extract claimHistory from the request body
+    const result = calculateRiskRating(claimHistory);  // Call the risk rating function
+
+    if (result.error) {
+        return res.status(400).json(result);  // Respond with an error if input is invalid
+    }
+
+    res.status(200).json(result);  // Respond with the calculated risk rating
+};
+
+// Export both the controller and the calculation function
+module.exports = { 
+    calculateRiskRating, 
+    riskRatingController 
+};
