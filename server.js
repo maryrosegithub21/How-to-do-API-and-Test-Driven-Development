@@ -1,10 +1,10 @@
-console.log('hello world');
 
 // ========== Module IMPORTS ========== //
 const cors = require("cors");
 const express = require("express");
 const app = express();
 require("dotenv").config();
+
 const { calculateRiskRating } = require('./src/RiskRating');
 
 // Middleware
@@ -14,7 +14,7 @@ app.use(express.json());
 // ========== ROUTE IMPORTS ========== //
 
 
-// Create API ENDPOINTS HERE!!!
+// // Create API ENDPOINTS HERE!!!
 
 // ROOT ENDPOINT
 app.get( "/", (req, res) => {
@@ -46,10 +46,11 @@ const vehiclesRouter = require("./routes/vehiclesRoutes");
 
 // Create API ENDPOINTS HERE!!!
 // ROOT ENDPOINT
-app.get("/", (req, res) => {
-    res.send("The backend is functioning!");
-  });
+// app.get("/", (req, res) => {
+//     res.send("The backend is functioning!");
+//   });
 
+//  vehicles Endpoint
   app.use(vehiclesRouter); 
 
 // Port
@@ -59,7 +60,6 @@ app
   .on("error", (err) => {
     console.log(err);
   });
-
 // Global Error Handler
 app.use((err, req, res, next) => {
     console.error(err.stack);

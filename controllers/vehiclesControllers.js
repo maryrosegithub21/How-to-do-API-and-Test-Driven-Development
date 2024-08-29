@@ -27,9 +27,7 @@ const getvehicles = (req, res) => {
           const updatedYear = vehicle.Year + (transformedModelSum * 100);
         return {
             Test_Case_Number : vehicle.Test_Case_Number,
-            // Make: vehicle.Model,
             Model :  `${vehicle.Model} ${vehicle.Year}`, // Combine Model and Year
-            // Year: vehicle.Year,
             Expected_Output : updatedYear,
             Test_Description : vehicle.Test_Description
         };
